@@ -87,7 +87,7 @@ namespace HikiCarry_Kalista
                 Config.AddSubMenu(harassMenu);
             }
 
-            var laneMenu = new Menu("LaneClear Settings","LaneClear Settings");
+            var laneMenu = new Menu("Lane Clear Settings","Lane Clear Settings");
             {
                 laneMenu.AddItem(new MenuItem("eClear", "Use E").SetValue(true));
                 laneMenu.AddItem(new MenuItem("eClearCount", "If Can Kill Minion >= ").SetValue(new Slider(2, 1, 5)));
@@ -95,14 +95,14 @@ namespace HikiCarry_Kalista
                 Config.AddSubMenu(laneMenu);
             }
 
-            var lastMenu = new Menu("LastHit Settings", "LastHit Settings");
+            var lastMenu = new Menu("Last Hit Settings", "Last Hit Settings");
             {
                 lastMenu.AddItem(new MenuItem("eLast", "Use E").SetValue(true));
                 lastMenu.AddItem(new MenuItem("manaLast", "Clear Mana Manager").SetValue(new Slider(20, 0, 100)));
                 Config.AddSubMenu(lastMenu);
             }
 
-            var jungMenu = new Menu("JungleClear Settings", "JungleClear Settings");
+            var jungMenu = new Menu("Jungle Clear Settings", "Jungle Clear Settings");
             {
                 jungMenu.AddItem(new MenuItem("qJungle", "Use Q").SetValue(true));
                 jungMenu.AddItem(new MenuItem("eJungle", "Use E").SetValue(true));
@@ -110,14 +110,14 @@ namespace HikiCarry_Kalista
                 Config.AddSubMenu(jungMenu);
             }
 
-            var ksMenu = new Menu("KillSteal Settings", "KillSteal Settings");
+            var ksMenu = new Menu("KillSteal Settings", "Killsteal Settings");
             {
                 ksMenu.AddItem(new MenuItem("qKS", "Use Q").SetValue(true));
                 ksMenu.AddItem(new MenuItem("eKS", "Use E").SetValue(true));
                 Config.AddSubMenu(ksMenu);
             }
 
-            var mobSteal = new Menu("Mob Steal Settings","Mob Steal Settings");
+            var mobSteal = new Menu("Jungle Steal Settings","Jungle Steal Settings");
             {
                 var stealMobs = new Menu("Stealable Mobs", "Stealable Mobs");
                 {
@@ -146,17 +146,17 @@ namespace HikiCarry_Kalista
                     itemMenu.AddSubMenu(qssMenu);
                 }
 
-                var botrk = new Menu("BOTRK Settings", "BOTRK Settings");
+                var botrk = new Menu("BotRK Settings", "BotRK Settings");
                 {
-                    botrk.AddItem(new MenuItem("useBOTRK", "Use BOTRK").SetValue(true));
+                    botrk.AddItem(new MenuItem("useBOTRK", "Use BotRK").SetValue(true));
                     botrk.AddItem(new MenuItem("myhp", "Use if my HP < %").SetValue(new Slider(20, 0, 100)));
                     botrk.AddItem(new MenuItem("theirhp", "Use if enemy HP < %").SetValue(new Slider(20, 0, 100)));
                     itemMenu.AddSubMenu(botrk);
                 }
 
-                var ghostBlade = new Menu("GhostBlade Settings", "GhostBlade Settings");
+                var ghostBlade = new Menu("Ghostblade Settings", "Ghostblade Settings");
                 {
-                    ghostBlade.AddItem(new MenuItem("gBlade", "Use GhostBlade").SetValue(true));
+                    ghostBlade.AddItem(new MenuItem("gBlade", "Use Ghostblade").SetValue(true));
                     itemMenu.AddSubMenu(ghostBlade);
                 }
 
@@ -176,7 +176,7 @@ namespace HikiCarry_Kalista
                 var mana = new Menu("Mana Potion Settings", "Mana Potion Settings");
                 {
                     mana.AddItem(new MenuItem("useMana", "Use Mana Potion").SetValue(true));
-                    mana.AddItem(new MenuItem("mymana", "Use if my mana < %").SetValue(new Slider(20, 0, 100)));
+                    mana.AddItem(new MenuItem("mymana", "Use if my Mana < %").SetValue(new Slider(20, 0, 100)));
                     itemMenu.AddSubMenu(mana);
                 }
                 
@@ -187,30 +187,30 @@ namespace HikiCarry_Kalista
             {
                 var orbSet = new Menu("Scrying Orb Settings", "Scrying Orb Settings");
                 {
-                    orbSet.AddItem(new MenuItem("bT", "Auto Scrying Orb Buy!").SetValue(true));
+                    orbSet.AddItem(new MenuItem("bT", "Autobuy Scrying Orb!").SetValue(true));
                     orbSet.AddItem(new MenuItem("bluetrinketlevel", "Scrying Orb Buy Level").SetValue(new Slider(6, 0, 18)));
                     miscMenu.AddSubMenu(orbSet);
                 }
-                miscMenu.AddItem(new MenuItem("qImmobile", "Auto Q to Immobile Target").SetValue(true));
+                miscMenu.AddItem(new MenuItem("qImmobile", "Auto Q against Immobile Target").SetValue(true));
                 Config.AddSubMenu(miscMenu);
             }
-            var wCombo = new Menu("Wombo Combo with R", "Wombo Combo with R"); // beta
+            var wCombo = new Menu("Special Combos with R", "Special Combos with R"); // beta
             {
-                var balista = new Menu("Balista","Balista");
+                var balista = new Menu("Balista (Blitzcrank)","Balista (Blitzcrank)");
                 {
                     balista.AddItem(new MenuItem("use.balista", "Balista Active").SetValue(true));
                     balista.AddItem(new MenuItem("balista.maxrange", "Balista Max Range").SetValue(new Slider(700, 100, 1500)));
                     balista.AddItem(new MenuItem("balista.minrange", "Balista Min Range").SetValue(new Slider(700, 100, 1500)));
                     wCombo.AddSubMenu(balista);
                 }
-                var skalista = new Menu("Skalista","Skalista");
+                var skalista = new Menu("Skalista (Skarner)","Skalista (Skarner)");
                 {
                     skalista.AddItem(new MenuItem("use.skalista", "SKalista Active").SetValue(true));
                     skalista.AddItem(new MenuItem("skalista.maxrange", "SKalista Max Range").SetValue(new Slider(700, 100, 1500)));
                     skalista.AddItem(new MenuItem("skalista.minrange", "SKalista Min Range").SetValue(new Slider(700, 100, 1500)));
                     wCombo.AddSubMenu(skalista);
                 }
-                var tahmkalista = new Menu("Tahm Kalista","Tahm Kalista");
+                var tahmkalista = new Menu("Tahm Kalista (Tahm Kench)","Tahm Kalista (Tahm Kench)");
                 {
                     tahmkalista.AddItem(new MenuItem("use.tahmkalista", "Tahm Kalista Active").SetValue(true));
                     tahmkalista.AddItem(new MenuItem("tahmkalista.maxrange", "Tahm Kalista Max Range").SetValue(new Slider(700, 100, 1500)));
@@ -232,7 +232,7 @@ namespace HikiCarry_Kalista
                 Config.AddSubMenu(drawMenu);
             }
 
-            Config.AddItem(new MenuItem("saveSupport", "Save Support [R]").SetValue(true));
+            Config.AddItem(new MenuItem("saveSupport", "Save Support with R").SetValue(true));
             Config.AddItem(new MenuItem("savePercent", "Save Support Health Percent").SetValue(new Slider(10, 0, 100)));
             Config.AddItem(new MenuItem("calculator", "E Damage Calculator").SetValue(new StringList(new[] { "Custom Calculator", "Common Calculator" }))); //soontm
             
