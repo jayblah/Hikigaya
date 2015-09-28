@@ -8,7 +8,7 @@ using LeagueSharp;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace HikiCarry_Kalista
+namespace HikiCarry_Viktor
 {
     class DamageIndicator
     {

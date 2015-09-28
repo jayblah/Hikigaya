@@ -8,42 +8,43 @@ using LeagueSharp.Common;
 using SharpDX;
 using Color = System.Drawing.Color;
 
-namespace adcUtility.Activator
+namespace HikiCarry_KogMaw.Activators
 {
-    public static class Quick_Silver_Sash
+    public static class QSS
     {
-        private static Obj_AI_Base adCarry = null;
+        private static Obj_AI_Base kogmaw = null;
         public static bool hikiQSS { get; set; }
-        public static Obj_AI_Base adcQSS
+        public const string championName = "KogMaw";
+
+        public static Obj_AI_Base kogmawQSS
         {
             get
             {
-                if (adCarry != null && adCarry.IsValid)
+                if (kogmaw != null && kogmaw.IsValid)
                 {
-                    return adCarry;
+                    return kogmaw;
                 }
                 return null;
             }
         }
-        static Quick_Silver_Sash()
+        static QSS()
         {
             Game.OnUpdate += Game_OnUpdate;
-            adCarry = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe);
-            if (adCarry != null)
+            kogmaw = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe && x.CharData.BaseSkinName == championName);
+            if (kogmaw != null)
             {
-                Console.Write(adCarry.CharData.BaseSkinName);
+                Console.Write(kogmaw.CharData.BaseSkinName);
             }
         }
 
         private static void Game_OnUpdate(EventArgs args)
         {
-            if (adCarry == null)
+            if (kogmaw == null)
             {
-                adCarry = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe);
+                kogmaw = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe && x.CharData.BaseSkinName == championName);
             }
-            if (adCarry != null)
+            if (kogmaw != null)
             {
-                //AhriSeduce = Ahri E Buff
                 var useQSS = Program.Config.Item("use.qss").GetValue<bool>();  // use qss
                 var clearIgnite = Program.Config.Item("clear.ignite").GetValue<bool>(); // clear ignite
                 var clearExhaust = Program.Config.Item("clear.exhaust").GetValue<bool>(); // clear exhaust
@@ -54,12 +55,10 @@ namespace adcUtility.Activator
 
                 if (useQSS)
                 {
-                    if (adCarry.HasBuffOfType(BuffType.Charm) || adCarry.HasBuffOfType(BuffType.Flee) ||
-                    adCarry.HasBuffOfType(BuffType.Polymorph) || adCarry.HasBuffOfType(BuffType.Snare) ||
-                    adCarry.HasBuffOfType(BuffType.Stun) || adCarry.HasBuffOfType(BuffType.Suppression) ||
-                    adCarry.HasBuffOfType(BuffType.Taunt) || adCarry.HasBuff("AhriSeduce") && 
-                    !adCarry.HasBuffOfType(BuffType.SpellShield) && 
-                    !adCarry.HasBuffOfType(BuffType.SpellImmunity))
+                    if (kogmaw.HasBuffOfType(BuffType.Charm) || kogmaw.HasBuffOfType(BuffType.Flee) ||
+                    kogmaw.HasBuffOfType(BuffType.Polymorph) || kogmaw.HasBuffOfType(BuffType.Snare) ||
+                    kogmaw.HasBuffOfType(BuffType.Stun) || kogmaw.HasBuffOfType(BuffType.Suppression) ||
+                    kogmaw.HasBuffOfType(BuffType.Taunt) && kogmaw.HasBuffOfType(BuffType.SpellShield) && kogmaw.HasBuffOfType(BuffType.SpellImmunity))
                     {
                         if (Items.HasItem(3140) && Items.CanUseItem(3140))
                         {
@@ -72,7 +71,7 @@ namespace adcUtility.Activator
                     }
                     if (clearIgnite)
                     {
-                        if (adCarry.HasBuff("summonerdot"))
+                        if (kogmaw.HasBuff("summonerdot"))
                         {
                             if (Items.HasItem(3140) && Items.CanUseItem(3140))
                             {
@@ -86,7 +85,7 @@ namespace adcUtility.Activator
                     }
                     if (clearExhaust)
                     {
-                        if (adCarry.HasBuff("summonerexhaust"))
+                        if (kogmaw.HasBuff("summonerexhaust"))
                         {
                             if (Items.HasItem(3140) && Items.CanUseItem(3140))
                             {
@@ -100,7 +99,7 @@ namespace adcUtility.Activator
                     }
                     if (clearZedR)
                     {
-                        if (adCarry.HasBuff("zedulttargetmark"))
+                        if (kogmaw.HasBuff("zedulttargetmark"))
                         {
                             if (Items.HasItem(3140) && Items.CanUseItem(3140))
                             {
@@ -114,7 +113,7 @@ namespace adcUtility.Activator
                     }
                     if (clearFizzR)
                     {
-                        if (adCarry.HasBuff("FizzMarinerDoom"))
+                        if (kogmaw.HasBuff("FizzMarinerDoom"))
                         {
                             if (Items.HasItem(3140) && Items.CanUseItem(3140))
                             {
@@ -129,7 +128,7 @@ namespace adcUtility.Activator
                     }
                     if (clearMalzR)
                     {
-                        if (adCarry.HasBuff("AlZaharNetherGrasp"))
+                        if (kogmaw.HasBuff("AlZaharNetherGrasp"))
                         {
                             if (Items.HasItem(3140) && Items.CanUseItem(3140))
                             {
@@ -143,7 +142,7 @@ namespace adcUtility.Activator
                     }
                     if (clearVladR)
                     {
-                        if (adCarry.HasBuff("VladimirHemoplague"))
+                        if (kogmaw.HasBuff("VladimirHemoplague"))
                         {
                             if (Items.HasItem(3140) && Items.CanUseItem(3140))
                             {

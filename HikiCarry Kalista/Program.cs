@@ -28,10 +28,15 @@ namespace HikiCarry_Kalista
                                             "Caitlyn","Urgot", "Ezreal", "KogMaw", "Ashe", "MissFortune", "Tristana", "Teemo", 
                                             "Sivir","Twitch", "Corki"};
 
-        public static string[] tankySupport = { "Alistar", "Braum", "Leona", "Nunu", "Tahm Kench",  "Taric", "Thresh"};
+        public static string[] tankySupport = { "Alistar", "Braum", "Leona", "Nunu", "Tahm Kench", "Taric", "Thresh" };
 
         public static string[] nontankySupport = { "Nami","Soraka","Janna","Sona","Lulu","Kayle","Bard","Karma","Lux","Morgana",
                                                  "Zilean","Zyra"};
+
+        private static readonly float[] RRD = { 19, 29, 39, 49, 59 };
+        private static readonly float[] RRDM = { 0.6f, 0.6f, 0.6f, 0.6f, 0.6f };
+        private static readonly float[] RRPS = { 10, 14, 19, 25, 32 };
+        private static readonly float[] RRPSM = { 0.2f, 0.225f, 0.25f, 0.275f, 0.3f };
 
         static void Main(string[] args)
         {
@@ -44,14 +49,14 @@ namespace HikiCarry_Kalista
             {
                 return;
             }
-            
+
             SupportManager.drawSupport = true;
 
             Activators.QSS.hikiQSS = true;
             Activators.Ghostblade.hikiGhostBlade = true;
             Activators.BOTRK.hikiBOTRK = true;
             Activators.Bilgewater.hikiBilgewater = true;
-			Activators.Potion.hikiPotion = true;
+            Activators.Potion.hikiPotion = true;
 
             Q = new Spell(SpellSlot.Q, 1150f);
             W = new Spell(SpellSlot.W, 5000f);
@@ -87,7 +92,7 @@ namespace HikiCarry_Kalista
                 Config.AddSubMenu(harassMenu);
             }
 
-            var laneMenu = new Menu("LaneClear Settings","LaneClear Settings");
+            var laneMenu = new Menu("LaneClear Settings", "LaneClear Settings");
             {
                 laneMenu.AddItem(new MenuItem("eClear", "Use E").SetValue(true));
                 laneMenu.AddItem(new MenuItem("eClearCount", "If Can Kill Minion >= ").SetValue(new Slider(2, 1, 5)));
@@ -117,7 +122,7 @@ namespace HikiCarry_Kalista
                 Config.AddSubMenu(ksMenu);
             }
 
-            var mobSteal = new Menu("Mob Steal Settings","Mob Steal Settings");
+            var mobSteal = new Menu("Mob Steal Settings", "Mob Steal Settings");
             {
                 var stealMobs = new Menu("Stealable Mobs", "Stealable Mobs");
                 {
@@ -130,19 +135,19 @@ namespace HikiCarry_Kalista
                 mobSteal.AddItem(new MenuItem("qSteal", "Use Q").SetValue(true));
                 mobSteal.AddItem(new MenuItem("eSteal", "Use E").SetValue(true));
                 Config.AddSubMenu(mobSteal);
-            } 
+            }
 
-            var itemMenu = new Menu("Item Settings","Item Settings");
+            var itemMenu = new Menu("Item Settings", "Item Settings");
             {
                 var qssMenu = new Menu("QSS Settings", "QSS Settings");
                 {
                     qssMenu.AddItem(new MenuItem("use.qss", "Use QSS").SetValue(true));
                     qssMenu.AddItem(new MenuItem("clear.ignite", "Clear Ignite").SetValue(true));
                     qssMenu.AddItem(new MenuItem("clear.exhaust", "Clear Exhaust").SetValue(true));
-                    qssMenu.AddItem(new MenuItem("clear.zedult","Clear Zed R").SetValue(true));
-                    qssMenu.AddItem(new MenuItem("clear.fizzult","Clear Fizz R").SetValue(true));
-                    qssMenu.AddItem(new MenuItem("clear.malzaharult","Clear Malzahar R").SetValue(true));
-                    qssMenu.AddItem(new MenuItem("clear.vladulti","Clear Vladimir R").SetValue(true));
+                    qssMenu.AddItem(new MenuItem("clear.zedult", "Clear Zed R").SetValue(true));
+                    qssMenu.AddItem(new MenuItem("clear.fizzult", "Clear Fizz R").SetValue(true));
+                    qssMenu.AddItem(new MenuItem("clear.malzaharult", "Clear Malzahar R").SetValue(true));
+                    qssMenu.AddItem(new MenuItem("clear.vladulti", "Clear Vladimir R").SetValue(true));
                     itemMenu.AddSubMenu(qssMenu);
                 }
 
@@ -179,7 +184,7 @@ namespace HikiCarry_Kalista
                     mana.AddItem(new MenuItem("mymana", "Use if my mana < %").SetValue(new Slider(20, 0, 100)));
                     itemMenu.AddSubMenu(mana);
                 }
-                
+
                 Config.AddSubMenu(itemMenu);
             }
 
@@ -196,31 +201,24 @@ namespace HikiCarry_Kalista
             }
             var wCombo = new Menu("Wombo Combo with R", "Wombo Combo with R"); // beta
             {
-                var balista = new Menu("Balista","Balista");
+                var balista = new Menu("Balista", "Balista");
                 {
                     balista.AddItem(new MenuItem("use.balista", "Balista Active").SetValue(true));
                     balista.AddItem(new MenuItem("balista.maxrange", "Balista Max Range").SetValue(new Slider(700, 100, 1500)));
                     balista.AddItem(new MenuItem("balista.minrange", "Balista Min Range").SetValue(new Slider(700, 100, 1500)));
                     wCombo.AddSubMenu(balista);
                 }
-                var skalista = new Menu("Skalista","Skalista");
+                var skalista = new Menu("Skalista", "Skalista");
                 {
                     skalista.AddItem(new MenuItem("use.skalista", "SKalista Active").SetValue(true));
                     skalista.AddItem(new MenuItem("skalista.maxrange", "SKalista Max Range").SetValue(new Slider(700, 100, 1500)));
                     skalista.AddItem(new MenuItem("skalista.minrange", "SKalista Min Range").SetValue(new Slider(700, 100, 1500)));
                     wCombo.AddSubMenu(skalista);
                 }
-                var tahmkalista = new Menu("Tahm Kalista","Tahm Kalista");
-                {
-                    tahmkalista.AddItem(new MenuItem("use.tahmkalista", "Tahm Kalista Active").SetValue(true));
-                    tahmkalista.AddItem(new MenuItem("tahmkalista.maxrange", "Tahm Kalista Max Range").SetValue(new Slider(700, 100, 1500)));
-                    tahmkalista.AddItem(new MenuItem("tahmkalista.minrange", "Tahm Kalista Min Range").SetValue(new Slider(700, 100, 1500)));
-                    wCombo.AddSubMenu(tahmkalista);
-                }
             }
             Config.AddSubMenu(wCombo);
 
-            var drawMenu = new Menu("Draw Settings","Draw Settings");
+            var drawMenu = new Menu("Draw Settings", "Draw Settings");
             {
                 drawMenu.AddItem(new MenuItem("qDraw", "Q Range").SetValue(new Circle(true, Color.White)));
                 drawMenu.AddItem(new MenuItem("wDraw", "W Range").SetValue(new Circle(true, Color.Silver)));
@@ -235,14 +233,14 @@ namespace HikiCarry_Kalista
             Config.AddItem(new MenuItem("saveSupport", "Save Support [R]").SetValue(true));
             Config.AddItem(new MenuItem("savePercent", "Save Support Health Percent").SetValue(new Slider(10, 0, 100)));
             Config.AddItem(new MenuItem("calculator", "E Damage Calculator").SetValue(new StringList(new[] { "Custom Calculator", "Common Calculator" }))); //soontm
-            
+
             var drawDamageMenu = new MenuItem("RushDrawEDamage", "E Damage").SetValue(true);
             var drawFill = new MenuItem("RushDrawEDamageFill", "E Damage Fill").SetValue(new Circle(true, Color.SeaGreen));
-            
+
             drawMenu.SubMenu("Damage Draws").AddItem(drawDamageMenu);
             drawMenu.SubMenu("Damage Draws").AddItem(drawFill);
 
-            DamageIndicator.DamageToUnit = GetComboDamage;
+            DamageIndicator.DamageToUnit = GetTotalDamage;
             DamageIndicator.Enabled = drawDamageMenu.GetValue<bool>();
             DamageIndicator.Fill = drawFill.GetValue<Circle>().Active;
             DamageIndicator.FillColor = drawFill.GetValue<Circle>().Color;
@@ -288,13 +286,13 @@ namespace HikiCarry_Kalista
             }
             if (Config.Item("use.skalista").GetValue<bool>())
             {
-                
+                Skalista();
             }
             stealJungle();
             KillSteal();
             immobileQ();
 
-            
+
 
         }
         public static void immobileQ()
@@ -310,7 +308,7 @@ namespace HikiCarry_Kalista
                     }
                 }
             }
-            
+
         }
         public static bool immobileTarget(Obj_AI_Hero target)
         {
@@ -363,26 +361,26 @@ namespace HikiCarry_Kalista
 
             if (Q.IsReady() && useQ)
             {
-                if (stealDragon && mob[0].BaseSkinName.Contains("Dragon")
-                    && mob[0].Health+50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Dragon Q
+                if (stealDragon && mob[0].CharData.BaseSkinName.Contains("Dragon")
+                    && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Dragon Q
                 {
                     Q.Cast(mob[0]);
                 }
 
-                if (stealBaron && mob[0].BaseSkinName.Contains("Baron")
-                    && mob[0].Health+50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Baron Q
+                if (stealBaron && mob[0].CharData.BaseSkinName.Contains("Baron")
+                    && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Baron Q
                 {
                     Q.Cast(mob[0]);
                 }
 
-                if (stealBlue && mob[0].BaseSkinName.Contains("SRU_Blue")
-                    && mob[0].Health+50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Blue Q
+                if (stealBlue && mob[0].CharData.BaseSkinName.Contains("SRU_Blue")
+                    && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Blue Q
                 {
                     Q.Cast(mob[0]);
                 }
 
-                if (stealRed && mob[0].BaseSkinName.Contains("SRU_Red")
-                    && mob[0].Health+50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Red Q
+                if (stealRed && mob[0].CharData.BaseSkinName.Contains("SRU_Red")
+                    && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= Q.GetDamage(mob[0])) // Red Q
                 {
                     Q.Cast(mob[0]);
                 }
@@ -395,23 +393,23 @@ namespace HikiCarry_Kalista
                     E.Cast(mob[0]);
                 }
 
-                if (stealBaron && mob[0].BaseSkinName.Contains("Baron")
+                if (stealBaron && mob[0].CharData.BaseSkinName.Contains("Baron")
                     && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= E.GetDamage(mob[0])) // Baron E
                 {
                     E.Cast();
                 }
 
-                if (stealBlue && mob[0].BaseSkinName.Contains("SRU_Blue")
+                if (stealBlue && mob[0].CharData.BaseSkinName.Contains("SRU_Blue")
                     && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= E.GetDamage(mob[0])) // Blue E
                 {
                     E.Cast();
                 }
 
-                if (stealRed && mob[0].BaseSkinName.Contains("SRU_Red")
+                if (stealRed && mob[0].CharData.BaseSkinName.Contains("SRU_Red")
                     && mob[0].Health + 50 + (mob[0].HPRegenRate / 2) <= E.GetDamage(mob[0])) // Red E
                 {
                     E.Cast();
-                }  
+                }
             }
 
 
@@ -423,11 +421,11 @@ namespace HikiCarry_Kalista
             var useR = Config.Item("rCombo").GetValue<bool>();
             var supportPercent = Config.Item("savePercent").GetValue<Slider>().Value;
             var rCount = Config.Item("rCount").GetValue<Slider>().Value;
-            var rAbleTarget = TargetSelector.GetTarget(E.Range,TargetSelector.DamageType.Physical);
+            var rAbleTarget = TargetSelector.GetTarget(E.Range, TargetSelector.DamageType.Physical);
             float rEnemyCount = Player.CountEnemiesInRange(R.Range);
 
             if (Q.IsReady() && useQ)
-            {   
+            {
                 foreach (var enemy in HeroManager.Enemies.Where(hero => hero.IsValidTarget(Q.Range)))
                 {
                     if (Q.GetPrediction(enemy).Hitchance >= HitChance.VeryHigh)
@@ -438,17 +436,10 @@ namespace HikiCarry_Kalista
             }
             if (E.IsReady() && useE)
             {
-                foreach (var enemy in HeroManager.Enemies.Where(hero => hero.IsValidTarget(E.Range)))
+                foreach (var enemy in HeroManager.Enemies.Where(hero => hero.IsValidTarget(E.Range) &&
+                    !undyBuff(hero) && !hero.HasBuffOfType(BuffType.SpellShield)))
                 {
-                    if (enemy.Level <= 6 && enemy.Health + 50 < E.GetDamage(enemy) && !undyBuff(enemy))
-                    {
-                        E.Cast();
-                    }
-                    if (enemy.Level > 6 && enemy.Level <= 11 && enemy.Health + 100 < E.GetDamage(enemy) && !undyBuff(enemy))
-                    {
-                        E.Cast();
-                    }
-                    if (enemy.Level > 11 && enemy.Level <= 18 && enemy.Health + 150 < E.GetDamage(enemy) && !undyBuff(enemy))
+                    if (enemy.Health < GetTotalDamage(enemy))
                     {
                         E.Cast();
                     }
@@ -464,7 +455,7 @@ namespace HikiCarry_Kalista
                     }
 
                     if (rAbleTarget.Distance(Player.Position) > E.Range && rAbleTarget.Distance(Player.Position) < R.Range
-                        && ally.HealthPercent > supportPercent &&  rEnemyCount <= 2 && nontankySupport.Contains(ally.ChampionName)) // Non-Tanky Champs
+                        && ally.HealthPercent > supportPercent && rEnemyCount <= 2 && nontankySupport.Contains(ally.ChampionName)) // Non-Tanky Champs
                     {
                         R.Cast();
                     }
@@ -555,25 +546,10 @@ namespace HikiCarry_Kalista
             {
                 foreach (var target in HeroManager.Enemies.Where(hero => hero.IsValidTarget(E.Range)))
                 {
-                    if (target.Health < GetComboDamage(target))
+                    if (GetTotalDamage(target) > target.Health)
                     {
-                        if (target.HasBuff("KalistaExpungeMarker") && target.Distance(Player.Position) < E.Range)
-                        {
-                            if (target.Level <= 6 && target.Health + 50 < E.GetDamage(target) && !undyBuff(target))
-                            {
-                                E.Cast();
-                            }
-                            if (target.Level > 6 && target.Level <= 11 && target.Health + 100 < E.GetDamage(target) && !undyBuff(target))
-                            {
-                                E.Cast();
-                            }
-                            if (target.Level > 11 && target.Level <= 18 && target.Health + 150 < E.GetDamage(target) && !undyBuff(target))
-                            {
-                                E.Cast();
-                            }
-                        }
-                    }
-                    
+                        E.Cast();
+                    }    
                 }
             }
         }
@@ -583,7 +559,7 @@ namespace HikiCarry_Kalista
             var useE = Config.Item("eJungle").GetValue<bool>();
             var manaSlider = Config.Item("manaJungle").GetValue<Slider>().Value;
             var mob = MinionManager.GetMinions(Player.ServerPosition, Orbwalking.GetRealAutoAttackRange(Player) + 100, MinionTypes.All, MinionTeam.Neutral, MinionOrderTypes.MaxHealth);
-            
+
             if (mob == null || (mob != null && mob.Count == 0))
             {
                 return;
@@ -601,16 +577,16 @@ namespace HikiCarry_Kalista
                     {
                         E.Cast();
                     }
-                }    
+                }
             }
         }
-        private static void Balista() // rdy 
+        private static void Balista()
         {
             if (!R.IsReady())
             {
                 return;
             }
-            var blitz = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsAlly && x.CharData.BaseSkinName == "Blitzcrank"  && x.HasBuff("kalistacoopstrikeally"));
+            var blitz = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsAlly && x.CharData.BaseSkinName == "Blitzcrank" && x.HasBuff("kalistacoopstrikeally"));
             var balistamaxrange = Config.Item("balista.maxrange").GetValue<Slider>().Value;
             var balistaminrange = Config.Item("balista.minrange").GetValue<Slider>().Value;
 
@@ -618,7 +594,7 @@ namespace HikiCarry_Kalista
             {
                 foreach (var enemy in HeroManager.Enemies.Where(o => o.IsEnemy && o.IsValidTarget(2450f)))
                 {
-                    if (SupportManager.Support.Distance(enemy.Position) <= 950f && 
+                    if (SupportManager.Support.Distance(enemy.Position) <= 950f &&
                         SupportManager.Support.Distance(Player.Position) >= balistaminrange &&
                         SupportManager.Support.Distance(Player.Position) <= balistamaxrange)
                     {
@@ -633,7 +609,7 @@ namespace HikiCarry_Kalista
                 }
             }
         }
-        private static void Skalista() // rdy
+        private static void Skalista() 
         {
             if (!R.IsReady())
             {
@@ -648,7 +624,7 @@ namespace HikiCarry_Kalista
             {
                 foreach (var enemy in HeroManager.Enemies.Where(o => o.IsEnemy && o.IsValidTarget(1849))) // Kalista R Range + Skarner R Range - 1
                 {
-                    if (SupportManager.Support.Distance(enemy.Position)<= 350 &&
+                    if (SupportManager.Support.Distance(enemy.Position) <= 350 &&
                         SupportManager.Support.Distance(Player.Position) >= skarnerminrange &&
                         SupportManager.Support.Distance(Player.Position) <= skarnermaxrange)
                     {
@@ -669,7 +645,7 @@ namespace HikiCarry_Kalista
             var useE = Config.Item("eLast").GetValue<bool>();
             var manaSlider = Config.Item("manaLast").GetValue<Slider>().Value;
             var qMinion = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range, MinionTypes.All, MinionTeam.Enemy);
-            
+
             if (Player.ManaPercent >= manaSlider)
             {
                 if (E.IsReady() && useE)
@@ -683,30 +659,54 @@ namespace HikiCarry_Kalista
                     }
                 }
             }
-            
+
         }
-        private static float GetComboDamage(Obj_AI_Hero hero)
+        public static float CustomCalculator(Obj_AI_Base target, int customStacks = -1)
         {
-            float damage = 0;
-            if (E.IsReady())
+            int buff = target.GetBuffCount("KalistaExpungeMarker");
+
+            if (buff > 0 || customStacks > -1)
             {
-                damage += E.GetDamage(hero);
+                var tDamage = (RRD[E.Level - 1] + RRDM[E.Level - 1] * Player.TotalAttackDamage) +
+                       ((customStacks < 0 ? buff : customStacks) - 1) *
+                       (RRPS[E.Level - 1] + RRPSM[E.Level - 1] * Player.TotalAttackDamage);
+
+                return (float)ObjectManager.Player.CalcDamage(target, Damage.DamageType.Physical, tDamage);
             }
 
-            var stacz = E.GetDamage(hero);
-            float edamagedraw = stacz * 100 / hero.Health;
+            return 0;
+        }
+        public static float GetTotalDamage(Obj_AI_Hero target)
+        {
+            var damage = 0f;
+
+            if (E.IsReady())
+            {
+                switch (Config.Item("calculator").GetValue<StringList>().SelectedIndex)
+                {
+                    case 0:
+                        damage += CustomCalculator(target);
+                        break;
+                    case 1:
+                        damage += (float)ObjectManager.Player.CalcDamage(target, Damage.DamageType.Physical, E.GetDamage(target));
+                        break;
+                }
+
+            }
+            var stacz = CustomCalculator(target);
+            float edamagedraw = stacz * 100 / target.Health;
             int edraw = (int)Math.Ceiling(edamagedraw);
             if (edraw >= 100)
             {
-                var yx = Drawing.WorldToScreen(hero.Position);
+                var yx = Drawing.WorldToScreen(target.Position);
                 Drawing.DrawText(yx[0], yx[1], System.Drawing.Color.Yellow, "STACK OVERLOAD - FUCK THEM ALL !");
             }
             if (edraw < 100)
             {
-                var yx = Drawing.WorldToScreen(hero.Position);
+                var yx = Drawing.WorldToScreen(target.Position);
                 Drawing.DrawText(yx[0], yx[1], System.Drawing.Color.Yellow, "E Stack on Enemy HP %" + edraw);
             }
-            return damage;
+            return (float)damage;
         }
         private static void Drawing_OnDraw(EventArgs args)
         {
@@ -717,19 +717,19 @@ namespace HikiCarry_Kalista
 
             if (menuItem1.Active && Q.IsReady())
             {
-                Render.Circle.DrawCircle(Player.Position, Q.Range, Color.White);
+                Render.Circle.DrawCircle(new Vector3(Player.Position.X,Player.Position.Y,Player.Position.Z), Q.Range, menuItem1.Color,5);
             }
             if (menuItem2.Active && W.IsReady())
             {
-                Render.Circle.DrawCircle(Player.Position, W.Range, Color.Silver);
+                Render.Circle.DrawCircle(new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z), W.Range, menuItem2.Color,5);
             }
             if (menuItem3.Active && E.IsReady())
             {
-                Render.Circle.DrawCircle(Player.Position, E.Range, Color.Yellow);
+                Render.Circle.DrawCircle(new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z), E.Range, menuItem3.Color,5);
             }
             if (menuItem4.Active && R.IsReady())
             {
-                Render.Circle.DrawCircle(Player.Position, E.Range, Color.Gold);
+                Render.Circle.DrawCircle(new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z), R.Range, menuItem4.Color,5);
             }
         }
     }

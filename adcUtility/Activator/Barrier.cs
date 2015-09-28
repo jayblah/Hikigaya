@@ -11,13 +11,13 @@ using Color = System.Drawing.Color;
 
 namespace adcUtility.Activator
 {
-    public static class Potion
+    public static class Barrier
     {
         private static Obj_AI_Base adCarry = null;
         private static Obj_AI_Minion jungleMobs;
-        public static bool hikiPotion { get; set; }
+        public static bool hikiBarrier { get; set; }
 
-        public static Obj_AI_Base adcPotion
+        public static Obj_AI_Base adcBarrier
         {
             get
             {
@@ -28,7 +28,7 @@ namespace adcUtility.Activator
                 return null;
             }
         }
-        static Potion()
+        static Barrier()
         {
             Game.OnUpdate += Game_OnGameUpdate;
             adCarry = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe);
@@ -45,41 +45,16 @@ namespace adcUtility.Activator
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            var useHP = Program.Config.Item("useHealth").GetValue<bool>();
-            var myhpforhppot = Program.Config.Item("myhp").GetValue<Slider>().Value;
+            var useHeal = Program.Config.Item("use.barrier").GetValue<bool>();
+            var healMyhp = Program.Config.Item("barrier.myhp").GetValue<Slider>().Value;
 
-            var useMana = Program.Config.Item("useMana").GetValue<bool>();
-            var mymanaformanapot = Program.Config.Item("mymana").GetValue<Slider>().Value;
-
-            if (useHP && Items.HasItem(2041) || Items.HasItem(2003) || Items.HasItem(2010))
+            if (useHeal && Program.Heal.IsReady() && ObjectManager.Player.Distance(jungleMobs.Position) >= 300)
             {
-                if (ObjectManager.Player.HealthPercent <= myhpforhppot && ObjectManager.Player.Distance(jungleMobs.Position) >= 300)
+                if (ObjectManager.Player.HealthPercent < healMyhp)
                 {
-                    if (Items.CanUseItem(2041))
-                    {
-                        Items.UseItem(2041);
-                    }
-                    if (Items.CanUseItem(2003))
-                    {
-                        Items.UseItem(2003);
-                    }
-                    if (Items.CanUseItem(2010))
-                    {
-                        Items.UseItem(2010);
-                    }
+                    ObjectManager.Player.Spellbook.CastSpell(Program.Barrier);
                 }
             }
-            if (useMana && Items.HasItem(2004))
-            {
-                if (ObjectManager.Player.ManaPercent <= mymanaformanapot)
-                {
-                    if (Items.CanUseItem(2004))
-                    {
-                        Items.UseItem(2004);
-                    }
-                }
-            }
-
         }
 
 

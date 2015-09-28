@@ -9,21 +9,21 @@ using SharpDX;
 using Color = System.Drawing.Color;
 
 
-namespace adcUtility.Activator
+namespace HikiCarry_Viktor.Activator
 {
     public static class Potion
     {
-        private static Obj_AI_Base adCarry = null;
-        private static Obj_AI_Minion jungleMobs;
+        private static Obj_AI_Base viktor = null;
         public static bool hikiPotion { get; set; }
+        public const string championName = "Viktor";
 
-        public static Obj_AI_Base adcPotion
+        public static Obj_AI_Base viktorPotion
         {
             get
             {
-                if (adCarry != null && adCarry.IsValid)
+                if (viktor != null && viktor.IsValid)
                 {
-                    return adCarry;
+                    return viktor;
                 }
                 return null;
             }
@@ -31,15 +31,10 @@ namespace adcUtility.Activator
         static Potion()
         {
             Game.OnUpdate += Game_OnGameUpdate;
-            adCarry = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe);
-            jungleMobs = ObjectManager.Get<Obj_AI_Minion>().FirstOrDefault(x => x.IsValidTarget(Orbwalking.GetRealAutoAttackRange(ObjectManager.Player) + 100)
-                && x.CharData.BaseSkinName.Contains("Dragon")
-                || x.CharData.BaseSkinName.Contains("Baron")
-                || x.CharData.BaseSkinName.Contains("SRU_Blue")
-                || x.CharData.BaseSkinName.Contains("SRU_Red") && x.IsVisible && !x.IsDead);
-            if (adCarry != null)
+            viktor = ObjectManager.Get<Obj_AI_Base>().FirstOrDefault(x => x.IsMe && x.CharData.BaseSkinName == championName);
+            if (viktor != null)
             {
-                Console.Write(adCarry.CharData.BaseSkinName);
+                Console.Write(viktor.CharData.BaseSkinName);
             }
         }
 
@@ -53,7 +48,7 @@ namespace adcUtility.Activator
 
             if (useHP && Items.HasItem(2041) || Items.HasItem(2003) || Items.HasItem(2010))
             {
-                if (ObjectManager.Player.HealthPercent <= myhpforhppot && ObjectManager.Player.Distance(jungleMobs.Position) >= 300)
+                if (ObjectManager.Player.HealthPercent <= myhpforhppot)
                 {
                     if (Items.CanUseItem(2041))
                     {
@@ -81,8 +76,5 @@ namespace adcUtility.Activator
             }
 
         }
-
-
-
     }
 }
