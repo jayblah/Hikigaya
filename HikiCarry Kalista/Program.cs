@@ -72,7 +72,11 @@ namespace HikiCarry_Kalista
 
             Config = new Menu("HikiCarry - Kalista", "HikiCarry - Kalista", true);
             TargetSelector.AddToMenu(Config.SubMenu("Target Selector Settings"));
+
+
             Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalker Settings"));
+            
+            //Orbwalker = new ModifiedOrbwalker.Orbwalker(Config.SubMenu("Orbwalker Settings"));
 
             var comboMenu = new Menu("Combo Settings", "Combo Settings");
             {
@@ -190,6 +194,13 @@ namespace HikiCarry_Kalista
 
             var miscMenu = new Menu("Miscellaneous", "Miscellaneous");
             {
+                var lastJoke = new Menu("Last Joke Settings", "Last Joke Settings");
+                {
+                    lastJoke.AddItem(new MenuItem("last.joke", "Last Joke").SetValue(true));
+                    lastJoke.AddItem(new MenuItem("last.joke.hp", "Kalista HP Percent").SetValue(new Slider(2, 1, 99)));
+                    miscMenu.AddSubMenu(lastJoke);
+                }
+
                 var orbSet = new Menu("Scrying Orb Settings", "Scrying Orb Settings");
                 {
                     orbSet.AddItem(new MenuItem("bT", "Auto Scrying Orb Buy!").SetValue(true));
@@ -224,7 +235,8 @@ namespace HikiCarry_Kalista
                 drawMenu.AddItem(new MenuItem("wDraw", "W Range").SetValue(new Circle(true, Color.Silver)));
                 drawMenu.AddItem(new MenuItem("eDraw", "E Range").SetValue(new Circle(true, Color.Yellow)));
                 drawMenu.AddItem(new MenuItem("rDraw", "R Range").SetValue(new Circle(true, Color.Gold)));
-                drawMenu.AddItem(new MenuItem("ePercent", "E % On Enemy").SetValue(true));
+                drawMenu.AddItem(new MenuItem("ePercent", "E % On Enemy").SetValue(new Circle(true, Color.Gold)));
+                drawMenu.AddItem(new MenuItem("e.percent.jungle.mobs", "E % On Jungle Mobs").SetValue(new Circle(true, Color.Chartreuse)));
                 drawMenu.AddItem(new MenuItem("signal", "Support Signal").SetValue(true));
                 drawMenu.AddItem(new MenuItem("circleSupport", "Draw Support on Circle").SetValue(true));
                 Config.AddSubMenu(drawMenu);
@@ -257,6 +269,7 @@ namespace HikiCarry_Kalista
                 DamageIndicator.Fill = eventArgs.GetNewValue<Circle>().Active;
                 DamageIndicator.FillColor = eventArgs.GetNewValue<Circle>().Color;
             };
+
             Config.AddToMainMenu();
             Game.OnUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
@@ -291,8 +304,7 @@ namespace HikiCarry_Kalista
             stealJungle();
             KillSteal();
             immobileQ();
-
-
+            Bitterlogic();
 
         }
         public static void immobileQ()
@@ -302,7 +314,7 @@ namespace HikiCarry_Kalista
             {
                 foreach (var enemy in HeroManager.Enemies.Where(hero => hero.IsValidTarget(Q.Range)))
                 {
-                    if (immobileTarget(enemy) && Q.GetPrediction(enemy).Hitchance >= HitChance.High)
+                    if (immobileTarget(enemy) && Q.GetPrediction(enemy).Hitchance >= HitChance.High && Q.GetPrediction(enemy).CollisionObjects.Count == 0)
                     {
                         Q.Cast(enemy);
                     }
@@ -428,7 +440,8 @@ namespace HikiCarry_Kalista
             {
                 foreach (var enemy in HeroManager.Enemies.Where(hero => hero.IsValidTarget(Q.Range)))
                 {
-                    if (Q.GetPrediction(enemy).Hitchance >= HitChance.VeryHigh)
+                    if (Q.GetPrediction(enemy).Hitchance >= HitChance.VeryHigh && 
+                        Q.GetPrediction(enemy).CollisionObjects.Count == 0)
                     {
                         Q.Cast(enemy);
                     }
@@ -476,6 +489,27 @@ namespace HikiCarry_Kalista
                 }
             }
         }
+        private static void Bitterlogic()
+        {
+            foreach (var enemy in HeroManager.Enemies.Where(o=> o.IsValidTarget(E.Range) && !o.IsDead && !o.IsZombie))
+            {
+                float spearDamage = GetTotalDamage(enemy);
+                float killableSpearCount = enemy.Health/spearDamage;
+                int totalSpear = (int)Math.Ceiling(killableSpearCount);
+                if (ObjectManager.Player.Health < Config.Item("last.joke.hp").GetValue<Slider>().Value && KillableSpearCount(enemy) - 1 < totalSpear)
+                {
+                    E.Cast();
+                }
+            }
+        }
+        public static int KillableSpearCount(Obj_AI_Hero enemy)
+        {
+            float spearDamage = GetTotalDamage(enemy);
+            float killableSpearCount = enemy.Health / spearDamage;
+            int totalSpear = (int)Math.Ceiling(killableSpearCount) - 1;
+
+            return totalSpear;
+        }
         private static void Harass()
         {
             var manaSlider = Config.Item("manaHarass").GetValue<Slider>().Value;
@@ -489,7 +523,7 @@ namespace HikiCarry_Kalista
                 {
                     foreach (var enemy in HeroManager.Enemies.Where(hero => hero.IsValidTarget(Q.Range)))
                     {
-                        if (Q.GetPrediction(enemy).Hitchance >= HitChance.VeryHigh)
+                        if (Q.GetPrediction(enemy).Hitchance >= HitChance.VeryHigh && Q.GetPrediction(enemy).CollisionObjects.Count == 0)
                         {
                             Q.Cast(enemy);
                         }
@@ -676,6 +710,21 @@ namespace HikiCarry_Kalista
 
             return 0;
         }
+        public static float JungleCalculator(Obj_AI_Minion minion, int customStacks = -1)
+        {
+            int buff = minion.GetBuffCount("KalistaExpungeMarker");
+
+            if (buff > 0 || customStacks > -1)
+            {
+                var tDamage = (RRD[E.Level - 1] + RRDM[E.Level - 1] * Player.TotalAttackDamage) +
+                       ((customStacks < 0 ? buff : customStacks) - 1) *
+                       (RRPS[E.Level - 1] + RRPSM[E.Level - 1] * Player.TotalAttackDamage);
+
+                return (float)ObjectManager.Player.CalcDamage(minion, Damage.DamageType.Physical, tDamage);
+            }
+
+            return 0;
+        }
         public static float GetTotalDamage(Obj_AI_Hero target)
         {
             var damage = 0f;
@@ -693,19 +742,6 @@ namespace HikiCarry_Kalista
                 }
 
             }
-            var stacz = CustomCalculator(target);
-            float edamagedraw = stacz * 100 / target.Health;
-            int edraw = (int)Math.Ceiling(edamagedraw);
-            if (edraw >= 100)
-            {
-                var yx = Drawing.WorldToScreen(target.Position);
-                Drawing.DrawText(yx[0], yx[1], System.Drawing.Color.Yellow, "STACK OVERLOAD - FUCK THEM ALL !");
-            }
-            if (edraw < 100)
-            {
-                var yx = Drawing.WorldToScreen(target.Position);
-                Drawing.DrawText(yx[0], yx[1], System.Drawing.Color.Yellow, "E Stack on Enemy HP %" + edraw);
-            }
             return (float)damage;
         }
         private static void Drawing_OnDraw(EventArgs args)
@@ -714,6 +750,8 @@ namespace HikiCarry_Kalista
             var menuItem2 = Config.Item("wDraw").GetValue<Circle>();
             var menuItem3 = Config.Item("eDraw").GetValue<Circle>();
             var menuItem4 = Config.Item("rDraw").GetValue<Circle>();
+            var menuItem5 = Config.Item("ePercent").GetValue<Circle>();
+            var menuItem6 = Config.Item("e.percent.jungle.mobs").GetValue<Circle>();
 
             if (menuItem1.Active && Q.IsReady())
             {
@@ -730,6 +768,81 @@ namespace HikiCarry_Kalista
             if (menuItem4.Active && R.IsReady())
             {
                 Render.Circle.DrawCircle(new Vector3(Player.Position.X, Player.Position.Y, Player.Position.Z), R.Range, menuItem4.Color,5);
+            }
+            if (menuItem5.Active && E.IsReady())
+            {
+                foreach (var enemy in ObjectManager.Get<Obj_AI_Hero>().Where(o=> o.IsHPBarRendered && o.IsEnemy && o.IsValidTarget(1000)))
+                {
+                    float getTotalDamage = GetTotalDamage(enemy);
+                    float tDamage = getTotalDamage*100/enemy.Health;
+                    int totalDamage = (int)Math.Ceiling(tDamage);
+
+                    if (totalDamage > 0)
+                    {
+                        Drawing.DrawText(enemy.HPBarPosition.X, enemy.HPBarPosition.Y, Color.Yellow, string.Format("{0}%", totalDamage));
+                    }
+                }
+            }
+            if (menuItem6.Active && E.IsReady())
+            {
+                foreach (var jungleMobs in ObjectManager.Get<Obj_AI_Minion>().Where(o => o.IsValidTarget(E.Range) && o.Team == GameObjectTeam.Neutral && o.IsVisible && !o.IsDead))
+                {
+                    var damage = 0f;
+                    switch (Config.Item("calculator").GetValue<StringList>().SelectedIndex)
+                    {
+                        case 0:
+                            damage += JungleCalculator(jungleMobs);
+                            break;
+                        case 1:
+                            damage += (float)ObjectManager.Player.CalcDamage(jungleMobs, Damage.DamageType.Physical, E.GetDamage(jungleMobs));
+                            break;
+                    }
+
+                    float tDamage = damage * 100 / jungleMobs.Health;
+                    int totalDamage = (int)Math.Ceiling(tDamage);
+                    if (totalDamage >= 0)
+                    {
+                        switch (jungleMobs.CharData.BaseSkinName)
+                        {
+                            case "SRU_Razorbeak":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X+50, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Red":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X, jungleMobs.HPBarPosition.Y-3, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Blue":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Dragon":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Baron":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Gromp":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Krug":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X+53, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "SRU_Murkwolf":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X+50, jungleMobs.HPBarPosition.Y, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                            case "Sru_Crab":
+                                Drawing.DrawText(jungleMobs.HPBarPosition.X+50, jungleMobs.HPBarPosition.Y+20, menuItem6.Color,
+                                    string.Format("{0}%", totalDamage));
+                                break;
+                        }
+                    }
+                }
             }
         }
     }
